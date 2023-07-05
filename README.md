@@ -1,23 +1,13 @@
-## Escola de Software - Autorizador - API Gateway
+## Escola de Software - MercadoPago - API Gateway
 
-Esse repositório contém a API gateway do microserviço de autorizador da escola de software.
+Esse repositório contém a API gateway do microserviço de MercadoPago da escola de software.
 
 # Rotas disponíveis
 
-- POST /realizar-login
+- GET /planos
 
-Rota para realizar o login na escola de software, tem como resposta um token que deve ser guardado para ser utilizado posteriormente.
+Rota para buscar os planos da escola de software que estão cadastrados no mercado pago
 
-Body:
-- email: string, required
-- senha: string, required
-
-- POST /refresh-token
-
-Rota para criar um novo token a partir de um token ativo.
-
-Body:
-- token: string, required
 Headers:
 - Authorization (bearer): string, required
 
@@ -29,26 +19,16 @@ Obrigado
 
 <hr/>
 
-## Escola de Software - Authorizer - API Gateway
+## Escola de Software - Mercado Pago - API Gateway
 
-This repository contains the API Gateway of Authorizer microservice of escola de software.
+This repository contains the plans of escola de software registered on mercado pago
 
 # Available routes
 
-- POST /realizar-login
+- GET /planos
 
-This route can be used to login into escola de software, the response will give you a token which need to be store to futher use.
+This route can be used to get the plans of escola de software
 
-Body:
-- email: string, required
-- senha: string, required
-
-- POST /refresh-token
-
-This route can be used to refresh your token by your actual token
-
-Body:
-- token: string, required
 Headers:
 - Authorization (bearer): string, required
 

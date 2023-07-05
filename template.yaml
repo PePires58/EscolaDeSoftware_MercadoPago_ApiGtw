@@ -1,16 +1,16 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: Escola de software - Autorizador - Api Gateway
+Description: Escola de software - MercadoPago - Api Gateway
 Parameters:
   Environment:
     Description: Environment
     Type: String
 Resources:
-  AutorizadorApiGateway:
+  MercadoPagoApiGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Sub "Escola de Software - Autorizador - Api Gateway - ${Environment}"
-      Description: !Sub "Escola de Software - Autorizador - Api Gateway - ${Environment}"
+      Name: !Sub "Escola de Software - MercadoPago - Api Gateway - ${Environment}"
+      Description: !Sub "Escola de Software - MercadoPago - Api Gateway - ${Environment}"
       EndpointConfiguration:
         Types:
           - REGIONAL
@@ -18,56 +18,24 @@ Resources:
       Mode: overwrite
 
   ########### ROTAS ########
-  AutorizadorApiGatewayRealizarLoginResource:
+  MercadoPagoApiGatewayPlanosResource:
     Type: "AWS::ApiGateway::Resource"
     Properties:
-      RestApiId: !Ref AutorizadorApiGateway
+      RestApiId: !Ref MercadoPagoApiGateway
       ParentId: !GetAtt
-        - AutorizadorApiGateway
+        - MercadoPagoApiGateway
         - RootResourceId
-      PathPart: "realizar-login"
-
-  AutorizadorApiGatewayRefreshTokenResource:
-    Type: "AWS::ApiGateway::Resource"
-    Properties:
-      RestApiId: !Ref AutorizadorApiGateway
-      ParentId: !GetAtt
-        - AutorizadorApiGateway
-        - RootResourceId
-      PathPart: "refresh-token"
+      PathPart: "planos"
 
   ######## INTEGRACOES #############
 
-  AutorizadorApiGatewayRealizarLoginPost:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      ApiKeyRequired: False
-      HttpMethod: POST
-      Integration:
-        IntegrationHttpMethod: POST
-        IntegrationResponses:
-          - StatusCode: 200
-          - StatusCode: 400
-          - StatusCode: 500
-        TimeoutInMillis: 2500
-        Type: AWS_PROXY
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}_escoladesoftware-autorizador-lambdarealizarloginfn/invocations"
-      MethodResponses:
-        - StatusCode: 200
-        - StatusCode: 400
-        - StatusCode: 500
-      OperationName: POST /realizar-login
-      ResourceId: !Ref AutorizadorApiGatewayRealizarLoginResource
-      RestApiId: !Ref AutorizadorApiGateway
-
-  AutorizadorApiGatewayRefreshTokenPost:
+  MercadoPagoApiGatewayPlanosGet:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: CUSTOM
       AuthorizerId: !Ref LambdaCustomAuthorizer
       ApiKeyRequired: False
-      HttpMethod: POST
+      HttpMethod: GET
       Integration:
         IntegrationHttpMethod: POST
         IntegrationResponses:
@@ -76,27 +44,26 @@ Resources:
           - StatusCode: 500
         TimeoutInMillis: 2500
         Type: AWS_PROXY
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}_escoladesoftware-autorizador-lambdarefreshtokenfn/invocations"
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}_escoladesoftware-mercadopago-lambdalistaplanosfn/invocations"
       MethodResponses:
         - StatusCode: 200
         - StatusCode: 400
         - StatusCode: 500
-      OperationName: POST /realizar-login
-      ResourceId: !Ref AutorizadorApiGatewayRefreshTokenResource
-      RestApiId: !Ref AutorizadorApiGateway
+      OperationName: GET /planos
+      ResourceId: !Ref MercadoPagoApiGatewayPlanosResource
+      RestApiId: !Ref MercadoPagoApiGateway
 
-
-  AutorizadorApiGatewayDeployment:
+  
+  MercadoPagoApiGatewayDeployment:
     Type: AWS::ApiGateway::Deployment
     DependsOn: 
-      - AutorizadorApiGatewayRealizarLoginResource
-      - AutorizadorApiGatewayRefreshTokenResource
+      - MercadoPagoApiGatewayPlanosResource
     Properties:
-      RestApiId: !Ref AutorizadorApiGateway
+      RestApiId: !Ref MercadoPagoApiGateway
       Description: !Ref Environment
       StageName: !Ref Environment
 
-  #########  Autorizador #########
+  #########  AUTORIZADOR #########
   LambdaCustomAuthorizer:
     Type: 'AWS::ApiGateway::Authorizer'
     Properties:
@@ -105,14 +72,14 @@ Resources:
       Type: TOKEN
       IdentitySource: method.request.header.Authorization
       Name: DefaultLambdaAuthorizer
-      RestApiId: !Ref AutorizadorApiGateway
+      RestApiId: !Ref MercadoPagoApiGateway
 
   #########  Permissions #########
-  AutorizadorInvokeLambdaRealizarLoginBasedPolicy:
+  MercadoPagoInvokeLambdaBuscaPlanosBasedPolicy:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}_escoladesoftware-autorizador-lambdarealizarloginfn"
+      FunctionName: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}_escoladesoftware-mercadopago-lambdalistaplanosfn"
       Principal: apigateway.amazonaws.com
       SourceAccount: !Sub "${AWS::AccountId}"
       SourceArn:
@@ -127,37 +94,12 @@ Resources:
               ":",
               !Ref AWS::AccountId,
               ":",
-              !Ref AutorizadorApiGateway,
-              "/*/POST/realizar-login"
+              !Ref MercadoPagoApiGateway,
+              "/*/GET/planos"
             ],
           ]
 
-  AutorizadorInvokeLambdaRefreshTokenBasedPolicy:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}_escoladesoftware-autorizador-lambdarefreshtokenfn"
-      Principal: apigateway.amazonaws.com
-      SourceAccount: !Sub "${AWS::AccountId}"
-      SourceArn:
-        Fn::Join:
-          [
-            "",
-            [
-              "arn:",
-              !Ref AWS::Partition,
-              ":execute-api:",
-              !Ref AWS::Region,
-              ":",
-              !Ref AWS::AccountId,
-              ":",
-              !Ref AutorizadorApiGateway,
-              "/*/POST/refresh-token"
-            ],
-          ]
-
-
-  AutorizadorInvokeLambdaAuthorizerBasedPolicy:
+  MercadoPagoInvokeLambdaAuthorizerBasedPolicy:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -176,7 +118,7 @@ Resources:
               ":",
               !Ref AWS::AccountId,
               ":",
-              !Ref AutorizadorApiGateway,
+              !Ref MercadoPagoApiGateway,
               "/authorizers/",
               !Ref LambdaCustomAuthorizer
             ],

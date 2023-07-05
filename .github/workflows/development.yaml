@@ -7,9 +7,9 @@ jobs:
   Deploy-API-Pipe:
     uses: PePires58/ReusableWorkflows/.github/workflows/004_apigateway_deploy_full_pipeline.yaml@main
     with: 
-      stack-name: "dev-escoladesoftware-autorizador-apigateway"
+      stack-name: "dev-escoladesoftware-mercadopago-apigateway"
       parameters-file-path: "infra/dev.parameters.json"
-      api-gateway-name: "Escola de Software - Autorizador - Api Gateway - dev"
+      api-gateway-name: "Escola de Software - MercadoPago - Api Gateway - dev"
     secrets:
       AWS_BUCKET_DEPLOY: ${{ secrets.AWS_BUCKET_DEPLOY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
