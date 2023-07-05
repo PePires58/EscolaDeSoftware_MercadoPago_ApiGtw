@@ -34,7 +34,7 @@ Resources:
     Properties:
       AuthorizationType: NONE
       ApiKeyRequired: False
-      HttpMethod: POST
+      HttpMethod: GET
       Integration:
         IntegrationHttpMethod: POST
         IntegrationResponses:
