@@ -32,8 +32,7 @@ Resources:
   MercadoPagoApiGatewayPlanosGet:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: CUSTOM
-      AuthorizerId: !Ref LambdaCustomAuthorizer
+      AuthorizationType: NONE
       ApiKeyRequired: False
       HttpMethod: GET
       Integration:
