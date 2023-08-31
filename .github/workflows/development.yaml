@@ -1,0 +1,29 @@
+name: Deploy infra - Development
+on:
+  push:
+    branches: [development]
+
+jobs:
+  Deploy-API-Pipe:
+    uses: PePires58/ReusableWorkflows/.github/workflows/004_apigateway_deploy_full_pipeline.yaml@main
+    with: 
+      stack-name: "dev-escoladesoftware-mercadopago-apigateway"
+      parameters-file-path: "infra/dev.parameters.json"
+      api-gateway-name: "Escola de Software - MercadoPago - Api Gateway - dev"
+    secrets:
+      AWS_BUCKET_DEPLOY: ${{ secrets.AWS_BUCKET_DEPLOY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  
+  Pull-request:
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    needs: [Deploy-API-Pipe]
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Create pull request
+        run: gh pr create -B main -H development --title 'Production deployment' --body 'Pull request to go to production' || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
