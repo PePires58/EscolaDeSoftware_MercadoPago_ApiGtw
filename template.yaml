@@ -27,14 +27,14 @@ Resources:
         - RootResourceId
       PathPart: "planos"
 
-   MercadoPagoApiGatewayProcessarPagamentoResource:
+  MercadoPagoApiGatewayProcessarPagamentoResource:
     Type: "AWS::ApiGateway::Resource"
     Properties:
       RestApiId: !Ref MercadoPagoApiGateway
       ParentId: !GetAtt
         - MercadoPagoApiGateway
         - RootResourceId
-      PathPart: "processar-pagamento"
+      PathPart: "api-mercadopago"
 
   ######## INTEGRACOES #############
 
@@ -80,7 +80,7 @@ Resources:
         - StatusCode: 200
         - StatusCode: 400
         - StatusCode: 500
-      OperationName: POST /processar-pagamento
+      OperationName: POST /api-mercadopago
       ResourceId: !Ref MercadoPagoApiGatewayProcessarPagamentoResource
       RestApiId: !Ref MercadoPagoApiGateway
   
@@ -150,7 +150,7 @@ Resources:
               !Ref AWS::AccountId,
               ":",
               !Ref MercadoPagoApiGateway,
-              "/*/POST/processar-pagamento"
+              "/*/*/*"
             ],
           ]
 
